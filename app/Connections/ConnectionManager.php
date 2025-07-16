@@ -72,7 +72,9 @@ class ConnectionManager implements ConnectionManagerContract
         $subdomain = $subdomain ?? $this->subdomainGenerator->generateSubdomain();
         app(UserRepository::class)->getUserByToken($authToken)->then(function ($user) use (&$subdomain) {
             if ($user !== null) {
-                $subdomain .= '-' .$user['name'];
+                if (!str_ends_with($subdomain, '-' . $user['name']) && !str_starts_with($subdomain, $user['name'] . '-')) {
+                    $subdomain .= '-' . $user['name'];
+                }
             }
         });
 
