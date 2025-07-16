@@ -6,6 +6,7 @@ use Expose\Server\Contracts\ConnectionManager as ConnectionManagerContract;
 use Expose\Server\Contracts\LoggerRepository;
 use Expose\Server\Contracts\StatisticsCollector;
 use Expose\Server\Contracts\SubdomainGenerator;
+use Expose\Server\Contracts\UserRepository;
 use Expose\Server\Exceptions\NoFreePortAvailable;
 use Expose\Common\Http\QueryParameters;
 use Ratchet\ConnectionInterface;
@@ -67,13 +68,19 @@ class ConnectionManager implements ConnectionManagerContract
 
         $connection->client_id = $clientId;
 
+        $authToken = $this->getAuthTokenFromConnection($connection);
+        $subdomain = $subdomain ?? $this->subdomainGenerator->generateSubdomain();
+        app(UserRepository::class)->getUserByToken($authToken)->then(function ($user) use (&$subdomain) {
+            $subdomain .= '-' .$user->subdomain;
+        });
+
         $storedConnection = new ControlConnection(
             $connection,
             $host,
-            $subdomain ?? $this->subdomainGenerator->generateSubdomain(),
+            $subdomain,
             $clientId,
             $serverHost,
-            $this->getAuthTokenFromConnection($connection)
+            $authToken
         );
 
         $this->connections[] = $storedConnection;
