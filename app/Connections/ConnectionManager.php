@@ -71,7 +71,7 @@ class ConnectionManager implements ConnectionManagerContract
         $authToken = $this->getAuthTokenFromConnection($connection);
         $subdomain = $subdomain ?? $this->subdomainGenerator->generateSubdomain();
         app(UserRepository::class)->getUserByToken($authToken)->then(function ($user) use (&$subdomain) {
-            $subdomain .= '-' .$user->subdomain;
+            $subdomain .= '-' .$user->name;
         });
 
         $storedConnection = new ControlConnection(
