@@ -39,7 +39,7 @@ return [
     | admin interface.
     |
     */
-    'validate_auth_tokens' => false,
+    'validate_auth_tokens' => env('VALIDATE_AUTH_TOKENS', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -147,7 +147,7 @@ return [
         |
         */
     'users' => [
-        'username' => 'secret',
+        env('ADMIN_USERNAME') => env('ADMIN_PASSWORD'),
     ],
 
     /*
